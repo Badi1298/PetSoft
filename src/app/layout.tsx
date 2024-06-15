@@ -16,11 +16,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${inter.className} min-h-svh bg-[#efe8ec] text-sm text-zinc-900`}>
-				<header>Header</header>
-				{children}
-				<footer>Footer</footer>
-			</body>
+			<body className={`${inter.className} min-h-svh bg-[#efe8ec] text-sm text-zinc-900`}>{children}</body>
 		</html>
 	);
 }
