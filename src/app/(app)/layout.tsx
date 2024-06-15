@@ -13,7 +13,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
 		<>
 			<BackgroundPattern />
 
-			<div className="mx-auto max-w-[1050px] px-4">
+			<div className="mx-auto flex min-h-svh max-w-[1050px] flex-col px-4">
 				<AppHeader />
 				{children}
 				<AppFooter />
