@@ -1,11 +1,13 @@
 import { ReactNode } from 'react';
 
+import PetsContextProvider from '@/contexts/pets-context-provider';
+import SearchContextProvider from '@/contexts/search-context-provider';
+
 import { petListSchema } from '@/lib/schemas';
 
 import AppFooter from '@/components/app-footer';
 import AppHeader from '@/components/app-header';
 import BackgroundPattern from '@/components/background-patters';
-import PetsContextProvider from '@/contexts/pets-context-provider';
 
 type AppLayoutProps = {
 	children: ReactNode;
@@ -28,7 +30,11 @@ export default async function AppLayout({ children }: AppLayoutProps) {
 
 			<div className="mx-auto flex min-h-svh max-w-[1050px] flex-col px-4">
 				<AppHeader />
-				<PetsContextProvider data={parsedData.data}>{children}</PetsContextProvider>
+
+				<SearchContextProvider>
+					<PetsContextProvider data={parsedData.data}>{children}</PetsContextProvider>
+				</SearchContextProvider>
+
 				<AppFooter />
 			</div>
 		</>
