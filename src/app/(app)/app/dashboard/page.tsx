@@ -5,6 +5,8 @@ import SearchForm from '@/components/search-form';
 import PetDetails from '@/components/pet-details';
 import ContentBlock from '@/components/content-block';
 
+import AddSavePetDialog from '@/components/add-save-pet-dialog';
+
 export default function Dashboard() {
 	return (
 		<main>
@@ -18,9 +20,11 @@ export default function Dashboard() {
 					<SearchForm />
 				</div>
 
-				<div className="col-span-1 col-start-1 row-span-full row-start-2">
+				<div className="relative col-span-1 col-start-1 row-span-full row-start-2">
 					<ContentBlock>
 						<PetList />
+
+						<AddSavePetDialog type="add" />
 					</ContentBlock>
 				</div>
 

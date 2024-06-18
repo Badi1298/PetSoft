@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 
-import { usePetsContext } from '@/lib/hooks';
 import { Pet } from '@/lib/types';
+import { usePetsContext } from '@/lib/hooks';
+
+import { Button } from './ui/button';
+import AddSavePetDialog from './add-save-pet-dialog';
 
 export default function PetDetails() {
 	const { selectedPet } = usePetsContext();
@@ -32,8 +35,10 @@ type Props = {
 };
 
 function TopBar({ pet }: Props) {
+	const { handleCheckoutPet } = usePetsContext();
+
 	return (
-		<div className="border-light flex items-center border-b bg-white px-8 py-5">
+		<div className="flex items-center border-b border-light bg-white px-8 py-5">
 			<Image
 				src={pet?.imageUrl}
 				alt="selected pet image"
@@ -42,6 +47,16 @@ function TopBar({ pet }: Props) {
 				className="h-[74px] w-[74px] rounded-full object-cover"
 			/>
 			<h2 className="ml-5 text-3xl font-semibold leading-7">{pet?.name}</h2>
+
+			<div className="ml-auto space-x-2.5">
+				<AddSavePetDialog type="edit" />
+				<Button
+					variant="secondary"
+					onClick={handleCheckoutPet}
+				>
+					Checkout
+				</Button>
+			</div>
 		</div>
 	);
 }
@@ -62,5 +77,5 @@ function OtherInfo({ pet }: Props) {
 }
 
 function Notes({ pet }: Props) {
-	return <section className="border-light mx-8 mb-9 flex-1 rounded-md border bg-white px-7 py-5">{pet?.notes}</section>;
+	return <section className="mx-8 mb-9 flex-1 rounded-md border border-light bg-white px-7 py-5">{pet?.notes}</section>;
 }
