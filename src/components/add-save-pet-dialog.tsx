@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 import PetForm from './pet-form';
 
 import { PlusIcon } from '@radix-ui/react-icons';
@@ -10,8 +14,13 @@ type AddSavePetDialogProps = {
 };
 
 export default function AddSavePetDialog({ type }: AddSavePetDialogProps) {
+	const [isFormOpen, setIsFormOpen] = useState(false);
+
 	return (
-		<Dialog>
+		<Dialog
+			open={isFormOpen}
+			onOpenChange={setIsFormOpen}
+		>
 			<DialogTrigger asChild>
 				{type === 'add' ? (
 					<Button
@@ -24,11 +33,15 @@ export default function AddSavePetDialog({ type }: AddSavePetDialogProps) {
 					<Button variant="secondary">Edit</Button>
 				)}
 			</DialogTrigger>
+
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>{{ add: 'Add a new pet', edit: 'Edit pet' }[type]}</DialogTitle>
 				</DialogHeader>
-				<PetForm />
+				<PetForm
+					type={type}
+					onFormSubmission={() => setIsFormOpen(false)}
+				/>
 			</DialogContent>
 		</Dialog>
 	);
