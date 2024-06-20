@@ -10,6 +10,7 @@ import { usePetsContext } from '@/lib/hooks';
 import { Button } from './ui/button';
 
 import AddSavePetDialog from './add-save-pet-dialog';
+import { useTransition } from 'react';
 
 export default function PetDetails() {
 	const { selectedPet } = usePetsContext();
@@ -38,6 +39,8 @@ type Props = {
 };
 
 function TopBar({ pet }: Props) {
+	const [isPending, startTransition] = useTransition();
+
 	return (
 		<div className="flex items-center border-b border-light bg-white px-8 py-5">
 			<Image
@@ -53,7 +56,12 @@ function TopBar({ pet }: Props) {
 				<AddSavePetDialog type="edit" />
 				<Button
 					variant="secondary"
-					onClick={async () => await checkoutPet(pet.id)}
+					disabled={isPending}
+					onClick={async () => {
+						startTransition(async () => {
+							await checkoutPet(pet.id);
+						});
+					}}
 				>
 					Checkout
 				</Button>
