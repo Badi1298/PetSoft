@@ -1,10 +1,15 @@
 'use client';
 
+import { addPet, editPet } from '@/actions/actions';
+
+import { toast } from 'sonner';
+import { usePetsContext } from '@/lib/hooks';
+
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-import { usePetsContext } from '@/lib/hooks';
+
+import PetFormBtn from './pet-form-btn';
 
 type PetFormProps = {
 	type: 'add' | 'edit';
@@ -12,36 +17,27 @@ type PetFormProps = {
 };
 
 export default function PetForm({ type, onFormSubmission }: PetFormProps) {
-	const { selectedPet, handleAddPet, handleEditPet } = usePetsContext();
-
-	const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-		event.preventDefault();
-
-		const formData = new FormData(event.currentTarget);
-		const newPet = {
-			name: formData.get('name') as string,
-			ownerName: formData.get('owner-name') as string,
-			imageUrl:
-				(formData.get('image-url') as string) ||
-				'https://images.unsplash.com/photo-1517849845537-4d257902454a?auto=format&fit=crop&q=100&w=1935&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-			age: Number(formData.get('age') as string),
-			notes: formData.get('notes') as string,
-		};
-
-		if (type === 'add') {
-			handleAddPet(newPet);
-		} else {
-			if (!selectedPet?.id) throw new Error('No pet is selected!');
-
-			handleEditPet(selectedPet.id, newPet);
-		}
-
-		onFormSubmission();
-	};
+	const { selectedPet } = usePetsContext();
 
 	return (
 		<form
-			onSubmit={handleSubmit}
+			action={async (formData) => {
+				if (type === 'add') {
+					const error = await addPet(formData);
+					if (error) {
+						toast.warning(error.message);
+						return;
+					}
+				} else if (type === 'edit') {
+					const error = await editPet(formData, selectedPet?.id as string);
+					if (error) {
+						toast.warning(error.message);
+						return;
+					}
+				}
+
+				onFormSubmission();
+			}}
 			className="flex flex-col"
 		>
 			<div className="space-y-3">
@@ -71,6 +67,7 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 						id="image-url"
 						name="image-url"
 						type="text"
+						required
 						defaultValue={type === 'edit' ? selectedPet?.imageUrl : ''}
 					/>
 				</div>
@@ -96,12 +93,7 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 				</div>
 			</div>
 
-			<Button
-				type="submit"
-				className="mt-5 self-end"
-			>
-				{type === 'add' ? 'Add Pet' : 'Edit Pet'}
-			</Button>
+			<PetFormBtn type={type} />
 		</form>
 	);
 }

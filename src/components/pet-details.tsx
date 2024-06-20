@@ -2,10 +2,13 @@
 
 import Image from 'next/image';
 
-import { Pet } from '@/lib/types';
+import { checkoutPet } from '@/actions/actions';
+
+import { Pet } from '@prisma/client';
 import { usePetsContext } from '@/lib/hooks';
 
 import { Button } from './ui/button';
+
 import AddSavePetDialog from './add-save-pet-dialog';
 
 export default function PetDetails() {
@@ -35,8 +38,6 @@ type Props = {
 };
 
 function TopBar({ pet }: Props) {
-	const { handleCheckoutPet } = usePetsContext();
-
 	return (
 		<div className="flex items-center border-b border-light bg-white px-8 py-5">
 			<Image
@@ -52,7 +53,7 @@ function TopBar({ pet }: Props) {
 				<AddSavePetDialog type="edit" />
 				<Button
 					variant="secondary"
-					onClick={handleCheckoutPet}
+					onClick={async () => await checkoutPet(pet.id)}
 				>
 					Checkout
 				</Button>

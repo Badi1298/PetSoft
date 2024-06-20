@@ -3,26 +3,19 @@ import { ReactNode } from 'react';
 import PetsContextProvider from '@/contexts/pets-context-provider';
 import SearchContextProvider from '@/contexts/search-context-provider';
 
-import { petListSchema } from '@/lib/schemas';
-
 import AppFooter from '@/components/app-footer';
 import AppHeader from '@/components/app-header';
+import { Toaster } from '@/components/ui/sonner';
 import BackgroundPattern from '@/components/background-patters';
+
+import prisma from '@/lib/db';
 
 type AppLayoutProps = {
 	children: ReactNode;
 };
 
 export default async function AppLayout({ children }: AppLayoutProps) {
-	const response = await fetch('https://bytegrad.com/course-assets/projects/petsoft/api/pets');
-
-	if (!response.ok) throw new Error('Could not fetch pets.');
-
-	const data = await response.json();
-
-	const parsedData = petListSchema.safeParse(data);
-
-	if (parsedData.error) throw new Error('Unexpected data format.');
+	const pets = await prisma.pet.findMany({});
 
 	return (
 		<>
@@ -32,11 +25,13 @@ export default async function AppLayout({ children }: AppLayoutProps) {
 				<AppHeader />
 
 				<SearchContextProvider>
-					<PetsContextProvider data={parsedData.data}>{children}</PetsContextProvider>
+					<PetsContextProvider data={pets}>{children}</PetsContextProvider>
 				</SearchContextProvider>
 
 				<AppFooter />
 			</div>
+
+			<Toaster position="top-right" />
 		</>
 	);
 }

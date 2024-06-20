@@ -2,7 +2,8 @@
 
 import { ReactNode, createContext, useState } from 'react';
 
-import { Pet } from '@/lib/types';
+import { Pet } from '@prisma/client';
+import { checkoutPet } from '@/actions/actions';
 
 type PetsContextProviderProps = {
 	data: Pet[];
@@ -14,42 +15,36 @@ type TPetContext = {
 	selectedPetId: string | null;
 	selectedPet: Pet | undefined;
 	numberOfPets: number;
-	handleAddPet: (newPet: Omit<Pet, 'id'>) => void;
 	handleEditPet: (petId: string, updatedPetData: Omit<Pet, 'id'>) => void;
-	handleCheckoutPet: () => void;
+	handleCheckoutPet: (id: string) => void;
 	handleChangeSelectedPetId: (id: string) => void;
 };
 
 export const PetsContext = createContext<TPetContext | null>(null);
 
-export default function PetsContextProvider({ data, children }: PetsContextProviderProps) {
-	const [pets, setPets] = useState(data);
+export default function PetsContextProvider({ data: pets, children }: PetsContextProviderProps) {
 	const [selectedPetId, setSetselectedPetId] = useState('');
 
 	const selectedPet = pets.find((pet) => pet.id === selectedPetId);
 	const numberOfPets = pets.length;
 
-	const handleAddPet = (newPet: Omit<Pet, 'id'>) => {
-		setPets((prev) => [...prev, { id: Date.now().toString(), ...newPet }]);
-	};
-
 	const handleEditPet = (petId: string, updatedPetData: Omit<Pet, 'id'>) => {
-		setPets((prev) =>
-			prev.map((pet) => {
-				if (pet.id === petId) {
-					return {
-						id: petId,
-						...updatedPetData,
-					};
-				}
-
-				return pet;
-			})
-		);
+		// setPets((prev) =>
+		// 	prev.map((pet) => {
+		// 		if (pet.id === petId) {
+		// 			return {
+		// 				id: petId,
+		// 				...updatedPetData,
+		// 			};
+		// 		}
+		// 		return pet;
+		// 	})
+		// );
 	};
 
-	const handleCheckoutPet = () => {
-		setPets((prev) => prev.filter((pet) => pet.id !== selectedPetId));
+	const handleCheckoutPet = async (id: string) => {
+		await checkoutPet(id);
+		// setPets((prev) => prev.filter((pet) => pet.id !== selectedPetId));
 		setSetselectedPetId('');
 	};
 
@@ -58,9 +53,7 @@ export default function PetsContextProvider({ data, children }: PetsContextProvi
 	};
 
 	return (
-		<PetsContext.Provider
-			value={{ pets, selectedPetId, selectedPet, numberOfPets, handleChangeSelectedPetId, handleCheckoutPet, handleAddPet, handleEditPet }}
-		>
+		<PetsContext.Provider value={{ pets, selectedPetId, selectedPet, numberOfPets, handleChangeSelectedPetId, handleCheckoutPet, handleEditPet }}>
 			{children}
 		</PetsContext.Provider>
 	);
