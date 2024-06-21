@@ -8,9 +8,12 @@ import { useMemo } from 'react';
 
 export default function PetList() {
 	const { search } = useSearchContext();
-	const { pets, selectedPetId, handleChangeSelectedPetId } = usePetsContext();
+	const { optimisticPets, selectedPetId, handleChangeSelectedPetId } = usePetsContext();
 
-	const filteredPets = useMemo(() => pets.filter((pet) => pet.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())), [pets, search]);
+	const filteredPets = useMemo(
+		() => optimisticPets.filter((pet) => pet.name.toLocaleLowerCase().includes(search.toLocaleLowerCase())),
+		[optimisticPets, search]
+	);
 
 	return (
 		<ul className="border-b border-light bg-white">

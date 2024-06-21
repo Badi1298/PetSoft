@@ -1,45 +1,27 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-
 import prisma from '@/lib/db';
-import { sleep } from '@/lib/utils';
+import { Pet } from '@/lib/types';
 
-export async function addPet(formData: FormData) {
+export async function addPet(pet: Omit<Pet, 'id'>) {
 	try {
 		await prisma.pet.create({
-			data: {
-				name: formData.get('name') as string,
-				ownerName: formData.get('owner-name') as string,
-				imageUrl: formData.get('image-url') as string,
-				age: Number(formData.get('age') as string),
-				notes: formData.get('notes') as string,
-			},
+			data: pet,
 		});
 	} catch (err) {
 		return { message: 'Could not add pet :(' };
 	}
-
-	revalidatePath('/app', 'layout');
 }
 
-export async function editPet(formData: FormData, id: string) {
+export async function editPet(pet: Omit<Pet, 'id'>, id: string) {
 	try {
 		await prisma.pet.update({
 			where: { id },
-			data: {
-				name: formData.get('name') as string,
-				ownerName: formData.get('owner-name') as string,
-				imageUrl: formData.get('image-url') as string,
-				age: Number(formData.get('age') as string),
-				notes: formData.get('notes') as string,
-			},
+			data: pet,
 		});
 	} catch (err) {
 		return { message: 'Could not edit pet :(' };
 	}
-
-	revalidatePath('/app', 'layout');
 }
 
 export async function checkoutPet(id: string) {
@@ -48,6 +30,4 @@ export async function checkoutPet(id: string) {
 	} catch (err) {
 		return { message: 'Could not delete pet :(' };
 	}
-
-	revalidatePath('/app', 'layout');
 }

@@ -2,15 +2,12 @@
 
 import Image from 'next/image';
 
-import { checkoutPet } from '@/actions/actions';
-
-import { Pet } from '@prisma/client';
+import { Pet } from '@/lib/types';
 import { usePetsContext } from '@/lib/hooks';
 
 import { Button } from './ui/button';
 
 import AddSavePetDialog from './add-save-pet-dialog';
-import { useTransition } from 'react';
 
 export default function PetDetails() {
 	const { selectedPet } = usePetsContext();
@@ -39,29 +36,24 @@ type Props = {
 };
 
 function TopBar({ pet }: Props) {
-	const [isPending, startTransition] = useTransition();
+	const { handleCheckoutPet } = usePetsContext();
 
 	return (
 		<div className="flex items-center border-b border-light bg-white px-8 py-5">
 			<Image
-				src={pet?.imageUrl}
+				src={pet.imageUrl}
 				alt="selected pet image"
 				width={74}
 				height={74}
 				className="h-[74px] w-[74px] rounded-full object-cover"
 			/>
-			<h2 className="ml-5 text-3xl font-semibold leading-7">{pet?.name}</h2>
+			<h2 className="ml-5 text-3xl font-semibold leading-7">{pet.name}</h2>
 
 			<div className="ml-auto space-x-2.5">
 				<AddSavePetDialog type="edit" />
 				<Button
 					variant="secondary"
-					disabled={isPending}
-					onClick={async () => {
-						startTransition(async () => {
-							await checkoutPet(pet.id);
-						});
-					}}
+					onClick={async () => await handleCheckoutPet(pet.id)}
 				>
 					Checkout
 				</Button>

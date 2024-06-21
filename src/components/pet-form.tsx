@@ -17,26 +17,26 @@ type PetFormProps = {
 };
 
 export default function PetForm({ type, onFormSubmission }: PetFormProps) {
-	const { selectedPet } = usePetsContext();
+	const { selectedPet, handleAddPet, handleEditPet } = usePetsContext();
 
 	return (
 		<form
 			action={async (formData) => {
-				if (type === 'add') {
-					const error = await addPet(formData);
-					if (error) {
-						toast.warning(error.message);
-						return;
-					}
-				} else if (type === 'edit') {
-					const error = await editPet(formData, selectedPet?.id as string);
-					if (error) {
-						toast.warning(error.message);
-						return;
-					}
-				}
-
 				onFormSubmission();
+
+				const petData = {
+					name: formData.get('name') as string,
+					ownerName: formData.get('owner-name') as string,
+					imageUrl: formData.get('image-url') as string,
+					age: Number(formData.get('age') as string),
+					notes: formData.get('notes') as string,
+				};
+
+				if (type === 'add') {
+					await handleAddPet(petData);
+				} else if (type === 'edit') {
+					await handleEditPet(petData, selectedPet?.id as string);
+				}
 			}}
 			className="flex flex-col"
 		>
