@@ -1,15 +1,11 @@
 'use client';
 
-import { addPet, editPet } from '@/actions/actions';
-
-import { toast } from 'sonner';
 import { usePetsContext } from '@/lib/hooks';
 
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
-
-import PetFormBtn from './pet-form-btn';
 
 type PetFormProps = {
 	type: 'add' | 'edit';
@@ -93,7 +89,12 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 				</div>
 			</div>
 
-			<PetFormBtn type={type} />
+			<Button
+				type="submit"
+				className="mt-5 self-end"
+			>
+				{type === 'add' ? 'Add Pet' : 'Edit Pet'}
+			</Button>
 		</form>
 	);
 }

@@ -2,12 +2,12 @@
 
 import Image from 'next/image';
 
-import { Pet } from '@/lib/types';
 import { usePetsContext } from '@/lib/hooks';
 
 import { Button } from './ui/button';
 
 import AddSavePetDialog from './add-save-pet-dialog';
+import { Pet } from '@prisma/client';
 
 export default function PetDetails() {
 	const { selectedPet } = usePetsContext();
