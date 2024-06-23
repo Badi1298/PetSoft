@@ -2,28 +2,53 @@
 
 import { usePetsContext } from '@/lib/hooks';
 
+import { useForm } from 'react-hook-form';
+
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
+import { PetEssentials } from '@/lib/types';
 
 type PetFormProps = {
 	type: 'add' | 'edit';
 	onFormSubmission: () => void;
 };
 
+const petFormSchema = z.object({
+	name: z.string().trim().min(1, { message: 'Name is required' }).max(30),
+	ownerName: z.string().trim().min(1, { message: 'Owner name is required' }).max(30),
+	imageUrl: z.string().trim().url({ message: 'Image url must be a valid url' }),
+	age: z.coerce.number().int().positive().max(99999),
+	notes: z.union([z.literal(''), z.string().trim().max(1000)]),
+});
+
 export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 	const { selectedPet, handleAddPet, handleEditPet } = usePetsContext();
+
+	const {
+		register,
+		trigger,
+		formState: { errors },
+	} = useForm<PetEssentials>({
+		resolver: zodResolver(petFormSchema),
+	});
 
 	return (
 		<form
 			action={async (formData) => {
+				const result = await trigger();
+				if (!result) return;
+
 				onFormSubmission();
 
 				const petData = {
 					name: formData.get('name') as string,
-					ownerName: formData.get('owner-name') as string,
-					imageUrl: formData.get('image-url') as string,
+					ownerName: formData.get('ownerName') as string,
+					imageUrl: formData.get('imageUrl') as string,
 					age: Number(formData.get('age') as string),
 					notes: formData.get('notes') as string,
 				};
@@ -41,51 +66,41 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 					<Label htmlFor="name">Name</Label>
 					<Input
 						id="name"
-						name="name"
-						type="text"
-						required
-						defaultValue={type === 'edit' ? selectedPet?.name : ''}
+						{...register('name')}
 					/>
+					{errors.name && <p className="text-xs text-red-500">{errors.name.message}</p>}
 				</div>
 				<div className="space-y-1">
-					<Label htmlFor="owner-name">Owner Name</Label>
+					<Label htmlFor="ownerName">Owner Name</Label>
 					<Input
-						id="owner-name"
-						name="owner-name"
-						type="text"
-						required
-						defaultValue={type === 'edit' ? selectedPet?.ownerName : ''}
+						id="ownerName"
+						{...register('ownerName')}
 					/>
+					{errors.ownerName && <p className="text-xs text-red-500">{errors.ownerName.message}</p>}
 				</div>
 				<div className="space-y-1">
-					<Label htmlFor="image-url">Image Url</Label>
+					<Label htmlFor="imageUrl">Image Url</Label>
 					<Input
-						id="image-url"
-						name="image-url"
-						type="text"
-						required
-						defaultValue={type === 'edit' ? selectedPet?.imageUrl : ''}
+						id="imageUrl"
+						{...register('imageUrl')}
 					/>
+					{errors.imageUrl && <p className="text-xs text-red-500">{errors.imageUrl.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="age">Age</Label>
 					<Input
 						id="age"
-						name="age"
-						type="number"
-						required
-						defaultValue={type === 'edit' ? selectedPet?.age : ''}
+						{...register('age')}
 					/>
+					{errors.age && <p className="text-xs text-red-500">{errors.age.message}</p>}
 				</div>
 				<div className="space-y-1">
 					<Label htmlFor="notes">Notes</Label>
 					<Textarea
 						id="notes"
-						name="notes"
-						rows={3}
-						required
-						defaultValue={type === 'edit' ? selectedPet?.notes : ''}
+						{...register('notes')}
 					/>
+					{errors.notes && <p className="text-xs text-red-500">{errors.notes.message}</p>}
 				</div>
 			</div>
 
