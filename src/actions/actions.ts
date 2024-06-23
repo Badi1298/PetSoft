@@ -7,13 +7,18 @@ import { Pet } from '@prisma/client';
 import { PetEssentials } from '@/lib/types';
 
 import { sleep } from '@/lib/utils';
+import { petFormSchema } from '@/lib/schemas';
 
 export async function addPet(pet: PetEssentials) {
 	await sleep(1000);
 
+	const parsedPet = petFormSchema.safeParse(pet);
+
+	if (!parsedPet.success) return { message: 'Invalid pet data.' };
+
 	try {
 		await prisma.pet.create({
-			data: pet,
+			data: parsedPet.data,
 		});
 	} catch (err) {
 		return { message: 'Could not add pet :(' };
