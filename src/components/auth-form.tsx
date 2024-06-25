@@ -1,4 +1,3 @@
-import React from 'react';
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -21,7 +20,7 @@ export default function AuthForm() {
 				/>
 			</div>
 
-			<Button className="">Log In</Button>
+			<Button>Log In</Button>
 		</form>
 	);
 }
