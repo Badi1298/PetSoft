@@ -11,6 +11,7 @@ export default function Home() {
 			<Image
 				src={petsoftPreview}
 				alt="Preview of PetSoft"
+				priority
 			/>
 			<div>
 				<Logo />

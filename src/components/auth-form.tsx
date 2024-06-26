@@ -1,14 +1,24 @@
+import { login } from '@/actions/actions';
+
 import { Label } from './ui/label';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
 
-export default function AuthForm() {
+type AuthFormProps = {
+	type: 'login' | 'signup';
+};
+
+export default function AuthForm({ type }: AuthFormProps) {
 	return (
-		<form className="flex flex-col">
+		<form
+			action={login}
+			className="flex flex-col"
+		>
 			<div className="space-y-1">
 				<Label htmlFor="email">Email</Label>
 				<Input
 					id="email"
+					name="email"
 					className="border-zinc-400"
 				/>
 			</div>
@@ -16,11 +26,13 @@ export default function AuthForm() {
 				<Label htmlFor="password">Password</Label>
 				<Input
 					id="password"
+					name="password"
+					type="password"
 					className="border-zinc-400"
 				/>
 			</div>
 
-			<Button>Log In</Button>
+			<Button>{type === 'login' ? 'Log In' : 'Sign Up'}</Button>
 		</form>
 	);
 }
