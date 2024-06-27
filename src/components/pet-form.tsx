@@ -20,8 +20,6 @@ type PetFormProps = {
 export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 	const { selectedPet, handleAddPet, handleEditPet } = usePetsContext();
 
-	const { id, name, ownerName, imageUrl, age, notes } = selectedPet!;
-
 	const {
 		register,
 		trigger,
@@ -29,7 +27,16 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 		formState: { errors },
 	} = useForm<TPetForm>({
 		resolver: zodResolver(petFormSchema),
-		defaultValues: { name, ownerName, imageUrl, age, notes },
+		defaultValues:
+			type === 'edit'
+				? {
+						name: selectedPet?.name,
+						ownerName: selectedPet?.ownerName,
+						imageUrl: selectedPet?.imageUrl,
+						age: selectedPet?.age,
+						notes: selectedPet?.notes,
+					}
+				: undefined,
 	});
 
 	return (

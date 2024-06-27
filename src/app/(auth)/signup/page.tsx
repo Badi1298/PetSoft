@@ -13,7 +13,7 @@ export default function SignupPage() {
 					href="/login"
 					className="font-medium"
 				>
-					Sign Up
+					Login
 				</Link>
 			</p>
 		</main>

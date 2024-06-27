@@ -1,4 +1,4 @@
-import { login } from '@/actions/actions';
+import { login, signup } from '@/actions/actions';
 
 import { Label } from './ui/label';
 import { Input } from './ui/input';
@@ -11,7 +11,7 @@ type AuthFormProps = {
 export default function AuthForm({ type }: AuthFormProps) {
 	return (
 		<form
-			action={login}
+			action={type === 'login' ? login : signup}
 			className="flex flex-col"
 		>
 			<div className="space-y-1">

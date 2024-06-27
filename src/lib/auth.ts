@@ -3,7 +3,7 @@ import Credentials from 'next-auth/providers/credentials';
 
 import bcrypt from 'bcryptjs';
 
-export const { auth, signIn } = NextAuth({
+export const { auth, signIn, signOut } = NextAuth({
 	pages: {
 		signIn: '/login',
 	},
@@ -42,7 +42,25 @@ export const { auth, signIn } = NextAuth({
 
 			if (isApp && !isLoggedIn) return false;
 
+			if (isLoggedIn && !isApp) {
+				return Response.redirect(new URL('/app/dashboard', request.nextUrl));
+			}
+
 			return true;
+		},
+		jwt: ({ token, user }) => {
+			if (user) {
+				token.userId = user.id;
+			}
+
+			return token;
+		},
+		session: ({ session, token }) => {
+			if (session.user) {
+				session.user.id = token.userId;
+			}
+
+			return session;
 		},
 	},
 });
