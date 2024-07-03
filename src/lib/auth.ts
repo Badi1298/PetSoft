@@ -3,8 +3,14 @@ import Credentials from 'next-auth/providers/credentials';
 
 import bcrypt from 'bcryptjs';
 import { getUserByEmail } from './server-utils';
+import { authSchema } from './schemas';
 
-export const { auth, signIn, signOut } = NextAuth({
+export const {
+	auth,
+	signIn,
+	signOut,
+	handlers: { GET, POST },
+} = NextAuth({
 	pages: {
 		signIn: '/login',
 	},
@@ -12,8 +18,15 @@ export const { auth, signIn, signOut } = NextAuth({
 	providers: [
 		Credentials({
 			async authorize(credentials) {
-				// runs on login
-				const { email, password } = credentials;
+				// Runs on login
+
+				// Validation
+				const validatedCredentials = authSchema.safeParse(credentials);
+
+				if (!validatedCredentials.success) return null;
+
+				// Extract values
+				const { email, password } = validatedCredentials.data;
 
 				const user = await getUserByEmail(email);
 
@@ -35,7 +48,7 @@ export const { auth, signIn, signOut } = NextAuth({
 	],
 	callbacks: {
 		authorized: ({ auth, request }) => {
-			// runs on every request with middleware
+			// Runs on every request with middleware
 			const isLoggedIn = !!auth?.user;
 			const isApp = request.nextUrl.pathname.includes('/app');
 

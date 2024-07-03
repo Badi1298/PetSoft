@@ -12,13 +12,9 @@ export const petFormSchema = z.object({
 
 export type TPetForm = z.infer<typeof petFormSchema>;
 
-// export const petListSchema = z.array(
-// 	z.object({
-// 		id: z.string(),
-// 		name: z.string(),
-// 		ownerName: z.string(),
-// 		imageUrl: z.string(),
-// 		age: z.number(),
-// 		notes: z.string(),
-// 	})
-// );
+export const authSchema = z.object({
+	email: z.string().trim().email().max(100),
+	password: z.string().trim().max(100),
+});
+
+export type TAuth = z.infer<typeof authSchema>;
