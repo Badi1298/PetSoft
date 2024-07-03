@@ -2,6 +2,7 @@ import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
 
 import bcrypt from 'bcryptjs';
+import { getUserByEmail } from './server-utils';
 
 export const { auth, signIn, signOut } = NextAuth({
 	pages: {
@@ -14,9 +15,7 @@ export const { auth, signIn, signOut } = NextAuth({
 				// runs on login
 				const { email, password } = credentials;
 
-				const user = await prisma?.user.findUnique({
-					where: { email },
-				});
+				const user = await getUserByEmail(email);
 
 				if (!user) {
 					console.log('No user found.');

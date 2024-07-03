@@ -52,7 +52,7 @@ export default function PetForm({ type, onFormSubmission }: PetFormProps) {
 				if (type === 'add') {
 					await handleAddPet(petData);
 				} else if (type === 'edit') {
-					await handleEditPet(petData, id);
+					await handleEditPet(petData, selectedPet?.id);
 				}
 			}}
 			className="flex flex-col"

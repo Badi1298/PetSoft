@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-import { auth } from '@/lib/auth';
+import { checkAuth, getPetsByUserId } from '@/lib/server-utils';
 
 import PetsContextProvider from '@/contexts/pets-context-provider';
 import SearchContextProvider from '@/contexts/search-context-provider';
@@ -11,24 +11,14 @@ import BackgroundPattern from '@/components/background-pattern';
 
 import { Toaster } from '@/components/ui/sonner';
 
-import prisma from '@/lib/db';
-import { redirect } from 'next/navigation';
-
 type AppLayoutProps = {
 	children: ReactNode;
 };
 
 export default async function AppLayout({ children }: AppLayoutProps) {
-	const session = await auth();
-	if (!session?.user) {
-		redirect('/login');
-	}
+	const session = await checkAuth();
 
-	console.log(session.user);
-
-	const pets = await prisma.pet.findMany({
-		where: { userId: session.user.id },
-	});
+	const pets = await getPetsByUserId(session.user.id);
 
 	return (
 		<>
