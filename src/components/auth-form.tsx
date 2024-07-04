@@ -1,17 +1,24 @@
+'use client';
+
+import { useFormState } from 'react-dom';
+
 import { login, signup } from '@/actions/actions';
 
 import { Label } from './ui/label';
 import { Input } from './ui/input';
-import { Button } from './ui/button';
+import AuthFormBtn from './auth-form-btn';
 
 type AuthFormProps = {
 	type: 'login' | 'signup';
 };
 
 export default function AuthForm({ type }: AuthFormProps) {
+	const [loginError, dispatchLogin] = useFormState(login, undefined);
+	const [signupError, dispatchSignup] = useFormState(signup, undefined);
+
 	return (
 		<form
-			action={type === 'login' ? login : signup}
+			action={type === 'login' ? dispatchLogin : dispatchSignup}
 			className="flex flex-col"
 		>
 			<div className="space-y-1">
@@ -37,7 +44,10 @@ export default function AuthForm({ type }: AuthFormProps) {
 				/>
 			</div>
 
-			<Button>{type === 'login' ? 'Log In' : 'Sign Up'}</Button>
+			<AuthFormBtn type={type} />
+
+			{loginError && <p className="mt-2 text-sm text-red-500">{loginError.message}</p>}
+			{signupError && <p className="mt-2 text-sm text-red-500">{signupError.message}</p>}
 		</form>
 	);
 }

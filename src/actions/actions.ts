@@ -9,9 +9,11 @@ import { signIn, signOut } from '@/lib/auth';
 import { authSchema, petFormSchema, petIdSchema } from '@/lib/schemas';
 
 import bcrypt from 'bcryptjs';
+import { Prisma } from '@prisma/client';
+import { AuthError } from 'next-auth';
 
 // User Actions
-export async function signup(formData: unknown) {
+export async function signup(_: unknown, formData: unknown) {
 	if (!(formData instanceof FormData)) return { message: 'Invalid form data.' };
 
 	const formDataObject = Object.fromEntries(formData.entries());
@@ -24,20 +26,47 @@ export async function signup(formData: unknown) {
 
 	const hashedPassword = await bcrypt.hash(password, 10);
 
-	await prisma.user.create({
-		data: {
-			email,
-			password: hashedPassword,
-		},
-	});
+	try {
+		await prisma.user.create({
+			data: {
+				email,
+				password: hashedPassword,
+			},
+		});
+	} catch (err) {
+		if (err instanceof Prisma.PrismaClientKnownRequestError) {
+			if (err.code === 'P2002') {
+				return { message: 'Email already exists.' };
+			}
+		}
+	}
 
 	await signIn('credentials', formData);
 }
 
-export async function login(formData: unknown) {
+export async function login(_: unknown, formData: unknown) {
 	if (!(formData instanceof FormData)) return { message: 'Invalid form data.' };
 
-	await signIn('credentials', formData);
+	try {
+		await signIn('credentials', formData);
+	} catch (err) {
+		if (err instanceof AuthError) {
+			switch (err.type) {
+				case 'CredentialsSignin': {
+					return {
+						message: 'Invalid credentials.',
+					};
+				}
+				default: {
+					return {
+						message: 'Error. Could not sign in.',
+					};
+				}
+			}
+		}
+
+		throw err;
+	}
 }
 
 export async function logout() {
