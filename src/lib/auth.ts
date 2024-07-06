@@ -54,8 +54,14 @@ export const {
 
 			if (isApp && !isLoggedIn) return false;
 
+			if (isLoggedIn && isApp && !auth.user.hasAccess) {
+				return Response.redirect(new URL('/payment', request.nextUrl));
+			}
+
+			if (isLoggedIn && isApp && auth.user.hasAccess) return true;
+
 			if (isLoggedIn && !isApp) {
-				if (request.nextUrl.pathname.includes('/login') || request.nextUrl.pathname.includes('/signup')) {
+				if ((request.nextUrl.pathname.includes('/login') || request.nextUrl.pathname.includes('/signup')) && !auth.user.hasAccess) {
 					return Response.redirect(new URL('/payment', request.nextUrl));
 				}
 
@@ -67,6 +73,7 @@ export const {
 		jwt: ({ token, user }) => {
 			if (user) {
 				token.userId = user.id;
+				token.hasAccess = user.hasAccess;
 			}
 
 			return token;
@@ -74,6 +81,7 @@ export const {
 		session: ({ session, token }) => {
 			if (session.user) {
 				session.user.id = token.userId;
+				session.user.hasAccess = token.hasAccess;
 			}
 
 			return session;

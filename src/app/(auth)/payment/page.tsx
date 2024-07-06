@@ -8,7 +8,11 @@ import H1 from '@/components/h1';
 
 import { Button } from '@/components/ui/button';
 
-export default function Page({ searchParams }) {
+type PageProps = {
+	searchParams: { [key: string]: string | string[] | undefined };
+};
+
+export default function Page({ searchParams }: PageProps) {
 	const [isPending, startTransition] = useTransition();
 
 	return (
