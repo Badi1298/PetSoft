@@ -14,7 +14,6 @@ import { AuthError } from 'next-auth';
 import { redirect } from 'next/navigation';
 
 import Stripe from 'stripe';
-import { env } from 'process';
 
 // User Actions
 export async function signup(_: unknown, formData: unknown) {
